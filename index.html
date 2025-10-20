@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essential Finance Terminology Handout (Searchable)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; 
+            color: #1f2937; /* Dark Gray Text */
+        }
+        /* Define the Primary Accent Color (Dark Blue) */
+        .accent-bg { background-color: #1040A5; } 
+        .accent-text { color: #1040A5; }
+        /* Define the Secondary Accent (Green for Plain Language) */
+        .plain-lang-bg { background-color: #ecfdf5; } /* Light Green BG */
+        .plain-lang-text { color: #065f46; } /* Dark Green Text */
+        
+        /* Three-column grid for the terms */
+        .term-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            transition: all 0.3s ease-in-out;
+        }
+        .term-header-row {
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #6b7280;
+            font-size: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ccc;
+        }
+        /* Accordion Styles */
+        .accordion-content {
+            max-height: 2000px; /* Sufficiently large initial height */
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+        }
+        .accordion-content.collapsed {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .term-grid.hidden-by-search {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10 lg:p-16">
+
+    <!-- Header Block -->
+    <header class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-black accent-text mb-2">
+            FREQUENTLY USED FINANCE TERMINOLOGY
+        </h1>
+        <h2 class="text-lg md:text-xl text-gray-600 font-semibold">
+            Right Task, Right Role, Right Time: Essential Vocabulary for Compliance
+        </h2>
+    </header>
+
+    <!-- Search Input -->
+    <div class="mb-8 max-w-4xl mx-auto">
+        <input type="text" id="term-search" onkeyup="filterTerms()" placeholder="Search for a term (e.g., PO, FLSA, Deadline)..." 
+               class="w-full p-4 border-2 border-gray-300 rounded-xl shadow-lg text-lg focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600 transition duration-150 font-medium">
+    </div>
+
+    <!-- Column Headers (Visible above the content area) -->
+    <div class="grid grid-cols-3 gap-8 mb-4 px-4 max-w-4xl mx-auto term-header-row">
+        <div class="term-header-col">Official Training Definition</div>
+        <div class="term-header-col">In Plain Language</div>
+        <div class="term-header-col">What It’s Not</div>
+    </div>
+    
+    <!-- Content Categories (Accordion Structure) -->
+    <main id="main-content" class="space-y-4 max-w-4xl mx-auto">
+
+        <!-- Category 1: Payroll & Timekeeping -->
+        <section class="bg-white border border-gray-200 rounded-xl shadow-lg">
+            <button class="accordion-header w-full flex justify-between items-center text-left text-xl md:text-2xl font-extrabold p-4 accent-bg text-white rounded-t-xl transition duration-150 hover:bg-[#0c3380]" 
+                    onclick="toggleAccordion(this)">
+                Category 1: Payroll & Timekeeping
+                <svg class="w-6 h-6 transform transition-transform duration-300" data-icon="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="accordion-content p-4" data-category="Category 1: Payroll & Timekeeping">
+                <!-- Term 1 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Employee is *not* eligible for overtime under FLSA (Fair Labor Standards Act).</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Paid a fixed salary regardless of hours worked.</div>
+                    <div class="text-red-700 font-semibold term-data">**Free from accountability** or the requirement to follow leave procedures.</div>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Employee is entitled to overtime if working over 40 hours/week.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Paid hourly; must accurately track *all* time worked via clock in/out.</div>
+                    <div class="text-red-700 font-semibold term-data">**Optional** to clock in/out or track time only when entering/leaving the building.</div>
+                </div>
+
+                <!-- Term 3 (Tuesday COB) -->
+                <div class="term-grid border-b-2 border-red-500 pb-4">
+                    <div class="font-medium term-data">All employee time entries must be submitted and *approved by the Budget Owner* by close of business Tuesday.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">**The absolute deadline.** If you miss this, payday is delayed.</div>
+                    <div class="text-red-700 font-semibold term-data">Flexible, optional, or **"I'll fix it later in the system."**</div>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Requirement that all overtime hours must be approved by a supervisor *before* the work is performed.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Ask first, work second (You can’t work extra hours without a green light).</div>
+                    <div class="text-red-700 font-semibold term-data">**Retroactive permission** or "Work now, get it signed later."</div>
+                </div>
+
+                <!-- Term 5 -->
+                <div class="term-grid border-b-0 pb-0">
+                    <div class="font-medium term-data">Written explanation and approval when an employee forgets to clock in/out, verifying the time worked.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">A paper trail that explains why the system shows a gap.</div>
+                    <div class="text-red-700 font-semibold term-data">**Ignoring the gap** or asking Payroll to "just fix it" without documentation.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 2: Purchasing & Accounts Payable -->
+        <section class="bg-white border border-gray-200 rounded-xl shadow-lg">
+            <button class="accordion-header w-full flex justify-between items-center text-left text-xl md:text-2xl font-extrabold p-4 accent-bg text-white rounded-t-xl transition duration-150 hover:bg-[#0c3380]" 
+                    onclick="toggleAccordion(this)">
+                Category 2: Purchasing & Accounts Payable
+                <svg class="w-6 h-6 transform transition-transform duration-300" data-icon="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="accordion-content p-4" data-category="Category 2: Purchasing & Accounts Payable">
+                <!-- Term 1 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Formal external document authorizing purchase of goods/services *before* commitment.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Your **approval slip before spending** district funds.</div>
+                    <div class="text-red-700 font-semibold term-data">A receipt after buying or a form that can be skipped.</div>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Internal request submitted by staff to generate a Purchase Order (PO).</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">The **"please buy this"** form that starts the approval process.</div>
+                    <div class="text-red-700 font-semibold term-data">**Automatically approved spending** without review.</div>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Request to issue payment without a PO (used only for special cases like stipends or utility bills).</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Shortcut to pay when a PO definitely doesn't apply.</div>
+                    <div class="text-red-700 font-semibold term-data">A way to **bypass approval steps** for standard purchases.</div>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="term-grid border-b-0 pb-0">
+                    <div class="font-medium term-data">Proof, required by Accounting, that goods/services were received as ordered.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">The **"we got it, and it's correct"** checkmark.</div>
+                    <div class="text-red-700 font-semibold term-data">An invoice or a check request.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 3: Budget & Chart of Accounts -->
+        <section class="bg-white border border-gray-200 rounded-xl shadow-lg">
+            <button class="accordion-header w-full flex justify-between items-center text-left text-xl md:text-2xl font-extrabold p-4 accent-bg text-white rounded-t-xl transition duration-150 hover:bg-[#0c3380]" 
+                    onclick="toggleAccordion(this)">
+                Category 3: Budget & Chart of Accounts
+                <svg class="w-6 h-6 transform transition-transform duration-300" data-icon="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="accordion-content p-4" data-category="Category 3: Budget & Chart of Accounts">
+                <!-- Term 1 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Assigning expenses to the correct fund, function, object, and program code per **FASRG** rules.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">The **"address"** for where money comes from and where it’s spent.</div>
+                    <div class="text-red-700 font-semibold term-data">Guesswork, "whatever code is open," or **reusing old codes.**</div>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Commitment of funds for purchase orders or contracts.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Money **set aside and reserved** *before* it’s actually spent.</div>
+                    <div class="text-red-700 font-semibold term-data">Actual payment.</div>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Reallocation of funds from one budget line to another.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Moving money between accounts *within the same Fund*.</div>
+                    <div class="text-red-700 font-semibold term-data">**Extra new funds** or money taken from a restricted grant.</div>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="term-grid border-b-0 pb-0">
+                    <div class="font-medium term-data">Comparison of planned vs. spent funds.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">The **“what we thought vs. what we did”** report.</div>
+                    <div class="text-red-700 font-semibold term-data">Always identical.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 4: General Controls & Accounting -->
+        <section class="bg-white border border-gray-200 rounded-xl shadow-lg">
+            <button class="accordion-header w-full flex justify-between items-center text-left text-xl md:text-2xl font-extrabold p-4 accent-bg text-white rounded-t-xl transition duration-150 hover:bg-[#0c3380]" 
+                    onclick="toggleAccordion(this)">
+                Category 4: General Controls & Accounting
+                <svg class="w-6 h-6 transform transition-transform duration-300" data-icon="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="accordion-content p-4" data-category="Category 4: General Controls & Accounting">
+                <!-- Term 1 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Policies and procedures designed to provide reasonable assurance of effective operations and compliance.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">The **"rules of the game"** that stop mistakes and fraud *before* they happen.</div>
+                    <div class="text-red-700 font-semibold term-data">**Extra red tape** or paperwork just for Finance’s benefit.</div>
+                </div>
+
+                <!-- Term 2 (SoD) -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Dividing responsibilities so that **no one person controls all aspects** of a financial transaction.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">No one should write the check, sign the check, and reconcile the ledger.</div>
+                    <div class="text-red-700 font-semibold term-data">About **"distrusting staff"**—it's about protecting *everyone*.</div>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">The process of matching records to bank or ledgers to ensure accuracy and detect errors.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">**Balancing the checkbook** to make sure the money is where it should be.</div>
+                    <div class="text-red-700 font-semibold term-data">Optional or something that only happens at the end of the year.</div>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="term-grid border-b-0 pb-0">
+                    <div class="font-medium term-data">Maintaining documentation and systems so that all financial transactions can be verified at any time.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Being ready for someone to **check your receipts tomorrow.**</div>
+                    <div class="text-red-700 font-semibold term-data">**Scrambling** the week before the auditors arrive.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category 5: Grants & Special Programs -->
+        <section class="bg-white border border-gray-200 rounded-xl shadow-lg">
+            <button class="accordion-header w-full flex justify-between items-center text-left text-xl md:text-2xl font-extrabold p-4 accent-bg text-white rounded-t-xl transition duration-150 hover:bg-[#0c3380]" 
+                    onclick="toggleAccordion(this)">
+                Category 5: Grants & Special Programs
+                <svg class="w-6 h-6 transform transition-transform duration-300" data-icon="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div class="accordion-content p-4" data-category="Category 5: Grants & Special Programs">
+                <!-- Term 1 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Expenditures that meet specific grant program requirements and pass the test of being necessary, reasonable, and allocable.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Spending that’s clearly tied to the program’s purpose and rules.</div>
+                    <div class="text-red-700 font-semibold term-data">Anything **“nice to have”** or “probably okay if we stretch it.”</div>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="term-grid">
+                    <div class="font-medium term-data">Federal funds must *add to*, not replace, local/state funds that would otherwise be used.</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">**Extra, not substitution.** Grant money must supplement required costs.</div>
+                    <div class="text-red-700 font-semibold term-data">A swap for costs that the state or local budget is already required to cover.</div>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="term-grid border-b-0 pb-0">
+                    <div class="font-medium term-data">Funds distributed by the state/district for specific purposes (SPED, Title, etc.).</div>
+                    <div class="plain-lang-bg p-3 rounded-xl plain-lang-text term-data">Money with **strings attached** that must be used only for that purpose.</div>
+                    <div class="text-red-700 font-semibold term-data">Free to use anywhere.</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 pt-6 border-t border-gray-300 text-center text-sm text-gray-500 max-w-4xl mx-auto">
+        <p>DeSoto Finance PD, October 2025.</p>
+        <p class="mt-1">For full policy details, consult the FASRG (Financial Accountability System Resource Guide).</p>
+    </footer>
+
+    <script>
+        // --- ACCORDION LOGIC ---
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('[data-icon="chevron"]');
+
+            if (content.classList.contains('collapsed')) {
+                // Open the accordion
+                content.classList.remove('collapsed');
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.classList.remove('rotate-180');
+            } else {
+                // Close the accordion
+                content.style.maxHeight = '0';
+                content.classList.add('collapsed');
+                icon.classList.add('rotate-180');
+            }
+        }
+        
+        // Initialize all accordions to be OPEN on load for usability
+        window.onload = function() {
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.classList.remove('collapsed');
+            });
+            // Hide the header row initially, it appears when filtering
+            document.querySelector('.term-header-row').style.display = 'grid'; 
+        }
+
+        // --- SEARCH/FILTER LOGIC ---
+        function filterTerms() {
+            const input = document.getElementById('term-search');
+            const filter = input.value.toUpperCase();
+            const termGrids = document.querySelectorAll('.term-grid');
+            const headerRow = document.querySelector('.term-header-row');
+
+            let foundCount = 0;
+
+            termGrids.forEach(termGrid => {
+                let textContent = '';
+                // Combine text from all data columns for searching
+                termGrid.querySelectorAll('.term-data').forEach(col => {
+                    textContent += col.textContent.toUpperCase() + ' ';
+                });
+
+                if (textContent.includes(filter)) {
+                    termGrid.classList.remove('hidden-by-search');
+                    foundCount++;
+
+                    // If a term matches, ensure its category is open
+                    const contentDiv = termGrid.closest('.accordion-content');
+                    if (contentDiv && contentDiv.classList.contains('collapsed')) {
+                        const headerButton = contentDiv.previousElementSibling;
+                        // Force open (without transition for better search UX)
+                        contentDiv.classList.remove('collapsed');
+                        contentDiv.style.maxHeight = contentDiv.scrollHeight + "px";
+                        headerButton.querySelector('[data-icon="chevron"]').classList.remove('rotate-180');
+                    }
+                } else {
+                    termGrid.classList.add('hidden-by-search');
+                }
+            });
+
+            // Adjust visibility of the main column headers based on search results
+            if (filter.length > 0) {
+                headerRow.style.display = 'grid'; // Show headers when searching
+            } else {
+                headerRow.style.display = 'grid'; // Keep them visible
+            }
+        }
+    </script>
+</body>
+</html>
