@@ -10,6 +10,7 @@
         .accordion-icon {
             transition: transform 0.3s ease-in-out;
         }
+        /* Rotates the icon 90 degrees when the button has the 'accordion-open' class */
         .accordion-open .accordion-icon {
             transform: rotate(90deg);
         }
@@ -17,10 +18,10 @@
 </head>
 <body class="bg-gray-50 font-sans">
 
-    <header class="bg-blue-800 text-white p-6 shadow-xl">
+    <header class="bg-gray-800 text-white p-6 shadow-xl">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-extrabold tracking-tight">
-                <span class="text-green-300">Finance</span> Terminology Handout
+                <span class="text-yellow-400">Finance</span> Terminology Handout
             </h1>
             <p class="text-sm opacity-80">Interactive Guide for Key Financial Terms</p>
         </div>
@@ -28,44 +29,174 @@
 
     <main class="max-w-7xl mx-auto p-6 lg:p-10">
 
-        <div class="mb-8 p-4 bg-white rounded-lg shadow-lg border-t-4 border-green-500">
-            <input type="text" id="searchInput" onkeyup="filterTerms()" placeholder="🔍 Search by Term, Definition, or Category..."
-                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out text-lg">
+        <div class="mb-8 p-4 bg-white rounded-lg shadow-lg border-t-4 border-green-600">
+            <input type="text" id="searchInput" oninput="filterTerms()" placeholder="🔍 Search by Term, Definition, or Category..."
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-150 ease-in-out text-lg">
         </div>
 
+        <div id="searchResultsContainer" class="hidden mb-8">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Search Results</h2>
+        </div>
+        
         <div id="terminologyContainer">
             </div>
 
     </main>
 
     <script>
+        // UPDATED FINANCE DATA STRUCTURE:
+        // 1. All terms moved to requested categories.
+        // 2. 'General' category removed.
+        // 3. New terms added.
+        // 4. Fiscal Year plain language updated.
         const financeData = {
             "Payroll": [
                 { term: "Gross Pay", official: "Total compensation paid to an employee before deductions.", plain: "Your pay *before* taxes and benefits are taken out.", not: "Net Pay (the final amount you take home)." },
                 { term: "FICA Tax", official: "Federal Insurance Contributions Act tax, funding Social Security and Medicare.", plain: "The required federal tax that contributes to your future retirement and health coverage.", not: "Income Tax (that pays for general government services)." },
                 { term: "W-2 Form", official: "Statement of annual wages and taxes withheld for federal tax purposes.", plain: "The form you receive in January summarizing last year's earnings and taxes.", not: "W-4 Form (used to set up your withholdings)." },
+                { term: "ACTIVE EMPLOYEES", official: "Individuals employed at the end of the reporting or measurement period, as applicable.", plain: "Staff currently working and included in year-end reports.", not: "Retirees or terminated staff." },
+                { term: "ANNUAL COVERED PAYROLL", official: "All elements included in annual compensation paid to active employees on which contributions to a plan are based.", plain: "The portion of total payroll used to calculate required contributions to pension/benefit plans.", not: "Total compensation (may exclude certain items)." },
             ],
             "Purchasing": [
                 { term: "Purchase Order (PO)", official: "A commercial document used to request a supplier to deliver goods or services.", plain: "The formal, written 'permission slip' given to a vendor before buying something.", not: "Invoice (the bill you receive *after* the purchase)." },
                 { term: "Requisition", official: "An internal document requesting authorization for a purchase.", plain: "The internal request you submit to get approval *before* a Purchase Order is created.", not: "Receipt (proof of payment)." },
                 { term: "Vendor/Supplier", official: "A person or company that supplies goods or services.", plain: "The company or person you're buying something *from*.", not: "Purchaser (the person or entity doing the buying)." },
+                { term: "Accounts Payable (AP)", official: "Amounts owed by a company to its creditors.", plain: "The money the company **owes** to vendors for goods/services received.", not: "Accounts Receivable (money **owed to** the company by the company)." },
+                { term: "Encumbrance", official: "Funds committed for a purchase order or contract, but not yet spent.", plain: "Money that's 'penciled in' or reserved because a PO has been issued.", not: "Expenditure (money that has actually left the bank)." },
             ],
             "Budget": [
                 { term: "Appropriation", official: "The legal authorization to incur obligations and to make expenditures for a specified purpose.", plain: "A specific amount of money legally set aside for a specific spending goal.", not: "Revenue (money coming in)." },
                 { term: "Operating Budget", official: "A plan that forecasts a company's sales, expenses, and profitability over a period.", plain: "The plan for day-to-day spending and revenue over a year.", not: "Capital Budget (for large, long-term asset purchases)." },
-                { term: "Encumbrance", official: "Funds committed for a purchase order or contract, but not yet spent.", plain: "Money that's 'penciled in' or reserved because a PO has been issued.", not: "Expenditure (money that has actually left the bank)." },
+                { term: "ALLOTMENT", official: "Portion of an annual or biennial budget appropriation allocated to an interim period.", plain: "A smaller, scheduled release of funds from the main budget for use during a short period (e.g., quarterly).", not: "The total annual budget." },
+                { term: "ANNUAL REQUIRED CONTRIBUTION (ARC)", official: "The employer’s required contribution for the year, calculated in accordance with certain parameters for defined benefit plans.", plain: "The calculated minimum amount an employer must contribute to a pension/benefit plan for the current year.", not: "Actual amount paid (which may differ)." },
+                { term: "APPROPRIATED BUDGET", official: "The expenditure authority created by the appropriation bills or ordinances that are signed into law and related estimated revenues.", plain: "The final, legally binding budget authority set by governing body (including all approved changes).", not: "The initial draft budget." },
+                { term: "BUDGETARY ACCOUNTS", official: "Special accounts used to achieve budgetary integration, but not reported in the general-purpose external financial statements.", plain: "Internal accounts used solely to track and control the budget versus actual spending.", not: "Financial (non-budget) accounts like Cash or Accounts Payable." },
+                { term: "BUDGETARY BASIS OF ACCOUNTING", official: "The method used to determine when revenues and expenditures are recognized for budgetary purposes.", plain: "The specific timing rules (e.g., cash vs. accrual) used for reporting and controlling the *budget*.", not: "GAAP (Generally Accepted Accounting Principles) basis." },
+                { term: "BUDGETARY INTEGRATION", official: "The management control technique by which the annual operating budget is recorded in the general ledger through the use of budgetary accounts.", plain: "Recording the budget directly in the accounting system to help managers track variances.", not: "The budget approval process." },
+                { term: "BUDGETARY REPORTING", official: "The requirement to present budget-to-actual comparisons in connection with general purpose external financial reporting.", plain: "The mandatory disclosure that compares how much was budgeted to how much was actually spent.", not: "Standard financial statements (like the Balance Sheet)." },
             ],
             "Accounting": [
                 { term: "Accrual Basis", official: "An accounting method where transactions are recorded when they occur, not when cash is exchanged.", plain: "Recording revenue when it's earned, and expenses when they're incurred, regardless of when cash changes hands.", not: "Cash Basis (recording only when cash is received or paid)." },
                 { term: "General Ledger", official: "A complete record of all the financial transactions of a company.", plain: "The master book that contains every single financial entry (journal) the organization has made.", not: "Chart of Accounts (the list of all available account names/numbers)." },
-                { term: "Accounts Payable (AP)", official: "Amounts owed by a company to its creditors.", plain: "The money the company **owes** to vendors for goods/services received.", not: "Accounts Receivable (money **owed to** the company by customers)." },
-            ],
-            "General": [
-                { term: "Fiscal Year", official: "A 12-month period that a company or government uses for financial reporting.", plain: "The official 'financial year' that might not start on January 1st.", not: "Calendar Year (January 1st to December 31st)." },
+                { term: "Fiscal Year", official: "A 12-month period that a company or government uses for financial reporting.", plain: "The official 'financial year' often running from **7/1 to 6/30**, which might not start on January 1st.", not: "Calendar Year (January 1st to December 31st)." },
                 { term: "Asset", official: "A resource with economic value that an individual, corporation, or country owns or controls with the expectation that it will provide a future benefit.", plain: "Something the company **owns** that has value (e.g., cash, equipment, buildings).", not: "Liability (something the company **owes**)." },
                 { term: "Liability", official: "An obligation that an individual or company owes to another party.", plain: "Something the company **owes** to an outside party (e.g., loans, Accounts Payable).", not: "Equity (the owners' stake in the company)." },
+                { term: "ACCOUNTABILITY", official: "Being obliged to explain one’s actions, to justify what one does.", plain: "The requirement for government to openly justify the use of public funds to the citizens (the 'right to know').", not: "Mere responsibility (you must *explain* your actions)." },
+                { term: "ACCRUAL BASIS OF ACCOUNTING", official: "A method of accounting that recognizes the financial effect of transactions, events, and interfund activities when they occur, regardless of the timing of related cash flows.", plain: "The core principle of modern accounting: recording revenue/expenses when earned/incurred, not when the check is sent/received.", not: "Cash basis of accounting." },
+                { term: "ACQUISITION COSTS", official: "Costs that vary with and are primarily related to the acquisition of new and renewal contracts (e.g., commissions, underwriting salaries, inspection fees).", plain: "Expenses incurred directly to get a new or renewed insurance/risk contract.", not: "Operating costs (general running expenses)." },
+                { term: "ACTUARIAL ACCRUED LIABILITY", official: "That portion of the actuarial present value of benefits promised to employees that will not be provided for by future normal costs.", plain: "The current unfunded obligation a pension plan has accumulated for past employee service.", not: "The amount funded by current year contributions." },
+                { term: "ACTUARIAL ASSUMPTIONS", official: "Assumptions as to the occurrence of future events affecting pension costs (e.g., mortality, withdrawals, retirement ages, investment earnings rates).", plain: "The professional guesses used to calculate how much a pension fund needs today to cover future costs.", not: "Confirmed future events." },
+                { term: "ACTUARIAL COST METHOD", official: "A procedure for determining the actuarial present value of pension plan benefits and for developing an equivalent allocation of such value to time periods.", plain: "The formula used to calculate the required normal cost and the actuarial accrued liability.", not: "The funding mechanism (how the money is actually collected)." },
+                { term: "ACTUARIAL SECTION", official: "One of five sections of a ACFR of a public employee retirement system.", plain: "The part of the comprehensive annual report that contains the retirement system's actuarial data and calculations.", not: "The financial statements section." },
+                { term: "ACTUARIAL VALUATION DATE", official: "The date as of which an actuarial valuation is performed.", plain: "The specific date used as the snapshot for all data when calculating pension/benefit funding levels.", not: "The report date." },
+                { term: "ACTUARIAL VALUE OF ASSETS", official: "The value of cash, investments, and other property belonging to a pension plan, as used by the actuary for the purpose of an actuarial valuation.", plain: "The calculated value of a pension plan's investments, often an average value over time, used for funding decisions.", not: "The market value of assets at year-end." },
+                { term: "ADDITIONS", official: "Term used to describe increases in the net positions of fiduciary funds.", plain: "Increases in the total net assets of funds held by the government on behalf of others (e.g., pension contributions).", not: "Revenue (for governmental funds)." },
+                { term: "ADVANCE REFUNDING", official: "A transaction in which new debt is issued to pay interest and principal on old, outstanding debt *before* the maturity or call date of the old debt.", plain: "Issuing new, lower-interest debt now, investing the proceeds, and using that money later to pay off old, higher-interest debt.", not: "Current refunding (where old debt is paid immediately)." },
+                { term: "ADVERSE OPINION", official: "Conclusion in the independent auditor’s report that financial statements are **not** fairly presented.", plain: "The worst audit outcome; the auditor says the financial statements are materially misstated or misleading.", not: "Unqualified opinion (the best outcome)." },
+                { term: "AGENT MULTIPLE-EMPLOYER DEFINED BENEFIT PENSION/OTHER POSTEMPLOYMENT BENEFITS PLAN", official: "An aggregation of single employer plans with pooled administration and investment, but separate actuarial valuations for each employer.", plain: "A shared pension plan where each participating employer funds and manages the benefits only for its own employees.", not: "Cost-sharing plan (where all obligations are pooled)." },
+                { term: "ALLOCATED CLAIMS ADJUSTMENT EXPENSES", official: "Expenses associated directly with specific claims paid or in the process of settlement, such as legal and adjusters’ fees.", plain: "The specific costs (like lawyer fees) that can be directly traced to handling one particular insurance claim.", not: "Unallocated claims adjustment expenses (general costs)." },
+                { term: "ANALYTICAL REVIEW", official: "The process of attempting to determine the reasonableness of financial data by comparing their behavior with other financial and nonfinancial data.", plain: "A high-level auditing procedure that looks for trends or unusual fluctuations by comparing current data to past data or budgets.", not: "Detailed testing of individual transactions." },
+                { term: "ANNUAL COMPREHENSIVE FINANCIAL REPORT (ACFR)", official: "Financial report that contains, at a minimum, three sections (introductory, financial, and statistical), and whose financial section provides information on each individual fund and component unit.", plain: "The complete, detailed, audited annual financial report of a government, going far beyond the basic required statements.", not: "The Basic Financial Statements (which are part of the ACFR)." },
+                { term: "ARBITRAGE", official: "In government finance, the investment of proceeds from the sale of tax-exempt securities in a taxable money market instrument that yields a higher rate.", plain: "The practice of borrowing money tax-free and investing it to earn a higher, taxable return (often restricted by tax laws).", not: "Legitimate investment in a standard portfolio." },
+                { term: "ASSETS", official: "Assets are resources with present service capacity that the district school board presently controls.", plain: "Things of value that the entity owns or controls, expected to provide a future benefit (e.g., cash, equipment).", not: "Liabilities (what the entity owes)." },
+                { term: "ASSESSED VALUATION", official: "A valuation set upon real estate or other property by a government as a basis for levying taxes.", plain: "The determined dollar value of property used by the government to calculate property taxes.", not: "Market value (actual selling price)." },
+                { term: "ASSET ALLOCATION", official: "The process of determining which types of investments are to be included and the percentages that they are to comprise in an overall investment portfolio.", plain: "The strategic decision about what percentage of a fund should be in stocks, bonds, real estate, etc.", not: "Selecting individual stocks or bonds." },
+                { term: "ASSIGNED FUND BALANCE", official: "Amounts constrained for specific purposes by actions of the government itself, but not formally restricted or committed.", plain: "Money intended for a specific purpose by a designated official (like the Finance Director) under delegated authority, but not a legal mandate.", not: "Committed fund balance (which requires formal legislative action)." },
+                { term: "ATTAINED AGE ACTUARIAL COST METHOD", official: "A method where the excess of the actuarial present value of projected benefits over the actuarial accrued liability is allocated over the earnings or service of the individual between the valuation date and assumed exit.", plain: "A specific formula used to calculate the annual required contribution to a pension fund.", not: "Unit Credit Actuarial Cost Method." },
+                { term: "AUDIT COMMITTEE", official: "A group of individuals, selected by the governing body, having specific responsibility for addressing all issues related to the independent audit of the financial statements.", plain: "A subcommittee that acts as a liaison between the external auditor and management/governing body to oversee the audit process.", not: "The entire governing body." },
+                { term: "AUDIT GUIDES", official: "Series of American Institute of Certified Public Accountants (AICPA) publications that enjoy potential 'level 2' status on the hierarchy of authoritative sources of GAAP.", plain: "Specific industry handbooks that provide detailed accounting and auditing instructions (like the one for State and Local Governments).", not: "GAAP itself (the main rulebook)." },
+                { term: "AUDIT SCOPE", official: "In the context of a financial statement audit, the coverage provided by the independent auditor’s opinion on the financial statements.", plain: "Which parts of the report (e.g., basic statements, notes, statistical data) the auditor is formally giving an opinion on.", not: "The depth of testing." },
+                { term: "AUDITOR ROTATION", official: "Policy that a government periodically replace the independent auditor of its financial statements.", plain: "The rule requiring a government to change its auditing firm every set number of years to ensure auditor independence.", not: "Replacing an auditor due to poor performance." },
+                { term: "AUDITOR’S REPORT ON INTERNAL CONTROL AND COMPLIANCE OVER FINANCIAL REPORTING", official: "Report issued in conjunction with a financial audit performed in accordance with generally accepted government auditing standards (GAGAS).", plain: "A required report that discusses any weaknesses found in the organization's system of controls and compliance with laws, but doesn't give a formal opinion on them.", not: "The main opinion on the financial statements." },
+                { term: "AVAILABILITY CRITERION", official: "Principle of the modified accrual basis of accounting according to which revenues may only be recognized when they are collectible within the current period or soon enough thereafter.", plain: "The rule that revenue must be available for spending *now* (typically within 60 days of year-end) to be recognized by a governmental fund.", not: "The accrual principle (which is about when the revenue is *earned*)." },
+                { term: "AVAILABILITY PERIOD", official: "A specified period immediately following the close of the fiscal year by the end of which cash must be collected for related revenue to be recognized.", plain: "The short window (e.g., 60 days) after the fiscal year ends during which deferred cash collections can still be counted as prior year revenue.", not: "The fiscal year itself." },
+                { term: "BANK INVESTMENT CONTRACTS", official: "A separate account at a financial institution that functions like a guaranteed investment contract.", plain: "An investment that guarantees a set rate of return and principal repayment from a bank's segregated account.", not: "A general CD or time deposit." },
+                { term: "BANKERS’ ACCEPTANCES", official: "Short-term, noninterest-bearing notes sold at a discount and redeemed by the accepting banks at maturity for face value.", plain: "A guaranteed short-term debt instrument primarily used to finance international trade transactions.", not: "Commercial paper (domestic corporate debt)." },
+                { term: "BANKING POOLS", official: "One of four different types of public entity risk pool. An arrangement by which monies are made available for pool members in the event of loss on a loan basis.", plain: "A shared risk arrangement that provides funds to members as a *loan* when losses occur.", not: "Insurance (which pays out as a grant)." },
+                { term: "BASIC FINANCIAL STATEMENTS", official: "The minimum combination of financial statements and note disclosures required for fair presentation in conformity with GAAP.", plain: "The essential set of required financial reports (like the Balance Sheet and Income Statement) that must be audited and published.", not: "The full ACFR (which is much more detailed)." },
+                { term: "BASIS DIFFERENCES", official: "Differences that arise through the employment of a basis of accounting for budgetary purposes that differs from the basis of accounting prescribed by GAAP.", plain: "The variance between the financial numbers reported using the budget's rules and the numbers reported using GAAP rules.", not: "The difference between budgeted and actual amounts." },
+                { term: "BASIS OF ACCOUNTING", official: "The timing of recognition, that is, when the effects of transactions or events should be recognized for financial reporting purposes (e.g., cash vs. accrual).", plain: "The fundamental rule for *when* you record a transaction (e.g., when the check is written or when the service is performed).", not: "Measurement focus (what you are measuring)." },
+                { term: "BETTERMENT", official: "An addition made to, or change made in, a capital asset, other than maintenance, to prolong its life or to increase its efficiency or capacity.", plain: "A major improvement to a building or equipment that increases its value or useful life, which is added to the asset's book value.", not: "Routine repairs or maintenance." },
+                { term: "BLENDING", official: "The method of reporting the financial data of a component unit that presents the component unit’s balances and transactions in a manner similar to the presentation of the balances and transactions of the primary government.", plain: "Integrating a component unit's financial data *directly* into the main government's fund columns, as if it were a department.", not: "Discrete presentation (reporting the unit in its own column)." },
+                { term: "BLUE BOOK", official: "A term commonly used to designate the Government Finance Officers Association’s (GFOA) publication Governmental Accounting, Auditing, and Financial Reporting (GAAFR).", plain: "The informal name for the authoritative GFOA guidance manual on government accounting and financial reporting.", not: "The GASB Codification." },
+                { term: "BOND ANTICIPATION NOTE", official: "Short-term interest-bearing note issued by a government in anticipation of bond proceeds to be received at a later date.", plain: "A temporary loan taken out with the expectation that it will be paid back once the long-term bonds are issued and sold.", not: "The bond itself (which is long-term)." },
+                { term: "BUSINESS-TYPE ACTIVITIES", official: "One of two classes of activities reported in the government-wide financial statements. They are financed in whole or in part by fees charged to external parties for goods or services.", plain: "Government operations (like utilities or a golf course) that are run like a business and charge customers for the services they use.", not: "Governmental activities (tax-funded services like police/fire)." },
+                { term: "CALL OPTION", official: "A contract giving the buyer the right, but not the obligation, to purchase a fixed number of items at a fixed price on or before a given date.", plain: "The right to buy an asset (like a stock or bond) at a preset price within a certain timeframe.", not: "A put option (the right to sell)." },
+                { term: "CAPITAL AND RELATED FINANCING ACTIVITIES", official: "Term used in connection with cash flows reporting. Includes acquiring/disposing of capital assets, borrowing money for assets, and repaying the debt/interest.", plain: "Cash movements related to buying/selling long-term assets or taking out/paying back loans specifically for those assets.", not: "Operating activities (day-to-day cash flow)." },
+                { term: "CAPITAL ASSETS", official: "Land, improvements to land, buildings, vehicles, equipment, infrastructure, and all other tangible or intangible assets that are used in operations and that have initial useful lives extending beyond a single reporting period.", plain: "Long-lived, expensive items the entity owns, such as buildings, vehicles, and major equipment.", not: "Supplies (short-lived, consumed items)." },
+                { term: "CAPITAL PROJECTS FUND", official: "Fund type used to account for financial resources to be used for the acquisition or construction of major capital facilities.", plain: "The designated fund used solely to track money for building major long-term assets like new schools, bridges, or facilities.", not: "Debt Service Fund (for paying the debt on assets)." },
+                { term: "CAPITALIZATION CONTRIBUTION", official: "A contribution to meet initial or ongoing capital minimums established by statute, regulation, or the pooling agreement itself, used in connection with public entity risk pools.", plain: "An initial or required cash deposit a government makes to join a risk-sharing insurance pool.", not: "Regular insurance premiums." },
+                { term: "CAPITALIZATION THRESHOLD", official: "The dollar value at which a government elects to capitalize tangible or intangible assets that are used in operations and that have initial useful lives extending beyond a single reporting period.", plain: "The minimum cost an item must have (e.g., \$5,000) before it is recorded as a long-term asset (Capital Asset) instead of a simple expense.", not: "The useful life of the asset." },
+                { term: "CASH", official: "The term, as used in connection with cash flows reporting, includes currency on hand, demand deposits with banks, and deposits in other kinds of accounts or cash management pools that have the general characteristics of demand deposit accounts.", plain: "Ready money; physical cash, money in checking accounts, and any funds that can be accessed immediately without notice or penalty.", not: "Long-term investments." },
+                { term: "CASH BASIS OF ACCOUNTING", official: "Basis of accounting that recognizes transactions or events when related cash amounts are received or disbursed.", plain: "The simple method of accounting where you only record income when cash is received and expenses when cash is paid.", not: "Accrual basis of accounting." },
+                { term: "CASH EQUIVALENT", official: "Short-term, highly liquid investments that are both (a) readily convertible to known amounts of cash and (b) so near their maturity (3 months or less) that they present insignificant risk of changes in value.", plain: "Very safe, short-term investments (like Treasury Bills) that are essentially as good as cash.", not: "Stocks or long-term bonds." },
+                { term: "CLAIMS-MADE POLICY", official: "A type of policy that covers losses from claims asserted (reported or filed) against the policyholder during the policy period, regardless of when the liability-imposing events occurred.", plain: "An insurance policy that only covers claims *filed* while the policy is active.", not: "Occurrence policy (covers events that *happened* while the policy was active)." },
+                { term: "CLAIMS-SERVICING POOL", official: "One of four different types of public entity risk pools. An arrangement by which a pool manages separate accounts for each pool member from which the losses of that member are paid.", plain: "A shared risk pool that only handles the administration and payment of claims from money kept in a separate account for each member.", not: "A fully pooled insurance arrangement." },
+                { term: "CLASSIFIED PRESENTATION", official: "The separate presentation on the statement of position of the current and long-term portions of assets and liabilities to permit the calculation of working capital.", plain: "Dividing assets and liabilities into two groups: those due/expiring within one year (current) and those due/expiring after one year (long-term).", not: "Lumping all assets and liabilities together." },
+                { term: "CLOSED AMORTIZATION PERIOD", official: "A specific number of years that is counted from one date and, therefore, declines to zero with the passage of time, used in connection with unfunded actuarial accrued liability.", plain: "A funding schedule for a pension liability that has a fixed end date (e.g., 20 years remaining) that shrinks each year.", not: "Open amortization period (where the end date resets)." },
+                { term: "CLOSED-END MUTUAL FUND", official: "An SEC-registered investment company that issues a limited number of shares to investors that are then traded as an equity security on a stock exchange.", plain: "A mutual fund that issues a fixed number of shares, which are bought and sold on the stock market like a regular stock.", not: "Open-end mutual fund (where shares are bought/sold directly from the fund)." },
+                { term: "COLLATERAL", official: "Security pledged by a financial institution to a governmental entity for its deposit.", plain: "Assets (like Treasury securities) that a bank must set aside to protect a government's deposit in case the bank fails.", not: "A general liability insurance policy." },
+                { term: "COLLATERAL POOL", official: "A group of securities pledged by a single financial institution (or multiple institutions) to provide common collateral for their deposits of public funds.", plain: "A shared reserve of assets used to protect public money deposited at a group of participating banks.", not: "Collateral pledged for a single deposit." },
+                { term: "COLLECTIVE NET PENSION LIABILITY", official: "The net pension liability for benefits provided through (1) a cost-sharing pension plan or (2) a single-employer or agent pension plan in circumstances in which there is a special funding situation.", plain: "The portion of a shared pension liability that a government must report based on its proportionate share.", not: "The total unfunded liability of the entire plan." },
+                { term: "COMMERCIAL PAPER", official: "An unsecured short-term promissory note issued by corporations, with maturities ranging from 2 to 270 days.", plain: "Short-term, uncollateralized loans that corporations take out, often used by governments as a very liquid investment.", not: "A municipal bond." },
+                { term: "COMMITTED FUND BALANCE", official: "Amounts that can only be used for specific purposes pursuant to constraints imposed by formal action of the government’s highest level of decision-making authority.", plain: "Money legally set aside for a specific use by the governing board/council (e.g., a resolution to save for a new fire truck) that requires the same action to undo.", not: "Assigned fund balance (set aside by management)." },
+                { term: "COMMITTEE OF SPONSORING ORGANIZATIONS (COSO)", official: "Organization that published Internal Control: An Integrated Framework.", plain: "The widely recognized framework used to design, implement, and evaluate the effectiveness of an organization's internal controls.", not: "An auditing firm." },
+                { term: "COMMODITIES PROGRAMS", official: "The distribution of surplus agricultural products as a form of assistance.", plain: "Government programs that give out surplus food or farm products.", not: "Cash assistance programs." },
+                { term: "COMPARABILITY", official: "The principle according to which differences between financial reports should be due to substantive differences in the underlying transactions or the governmental structure rather than due to selection of different alternatives in accounting procedures or practices.", plain: "The quality that allows users to compare different financial statements because they follow the same consistent set of rules.", not: "Consistency (using the same rules year after year)." },
+                { term: "COMPARATIVE DATA", official: "Information from prior fiscal periods provided to enhance the analysis of financial data in the current fiscal period.", plain: "Including previous years' numbers next to the current year's numbers to show trends or changes.", not: "Data for only the current year." },
+                { term: "COMPARATIVE FINANCIAL STATEMENTS", official: "Financial statements providing all of the information required by GAAP for two or more fiscal periods.", plain: "A full set of financial statements that shows the current year's figures alongside the previous year's figures.", not: "Statistical data (non-financial)." },
+                { term: "COMPLIANCE SUPPLEMENT", official: "A publication of the OMB outlining compliance requirements for federal awards programs.", plain: "The essential guide auditors use to check if a government spent federal grant money according to the grant's rules.", not: "The grant application itself." },
+                { term: "COMPONENT UNIT", official: "A legally separate organization for which the elected officials of the primary government are financially accountable.", plain: "A separate legal entity (like a school district or public authority) that is included in the main government's financial report because the primary government controls it.", not: "A contractor or vendor." },
+                { term: "COMPOSITE DEPRECIATION METHODS", official: "Depreciation methods applied to groups of assets rather than to individual assets.", plain: "Calculating depreciation for a whole category of similar assets (e.g., all computers) instead of tracking each item separately.", not: "Unit depreciation (tracking individual assets)." },
+                { term: "COMPREHENSIVE FRAMEWORK OF INTERNAL CONTROLS", official: "A structure of internal control that provides for a favorable control environment, continuing assessment of risk, effective control-related policies, effective communication, and ongoing monitoring.", plain: "The holistic system used to ensure financial information is accurate and assets are protected (often based on the COSO framework).", not: "A single control (like requiring two signatures on a check)." },
+                { term: "CONDUIT DEBT", official: "Certain limited obligation revenue bonds, certificates of participation, or similar debt instruments issued by a state or local governmental entity for the express purpose of providing capital financing for a specific third party that is not a part of the issuer’s financial reporting entity.", plain: "Bonds a government issues for the benefit of a private entity (like a hospital) where the government has no obligation for the debt repayment.", not: "General obligation debt." },
+                { term: "CONNECTION FEES", official: "Fees charged to join or to extend an existing utility system. Often referred to as tap fees or system development fees.", plain: "One-time charges customers pay to connect to a water, sewer, or electric utility system.", not: "Monthly usage fees." },
+                { term: "CONSISTENCY", official: "The principle according to which once an accounting principle or reporting method is adopted, it will be used for all similar transactions and events.", plain: "Using the *same* accounting rules and methods year after year so reports are comparable over time.", not: "Comparability (using the same rules as *other* governments)." },
+                { term: "CONTROL CYCLE", official: "A series of logically connected transactions/processes and associated control-related policies and procedures.", plain: "The end-to-end steps for a financial process (e.g., purchasing, from request to payment) and the controls put in place at each step.", not: "A single transaction." },
+                { term: "CONTROL DEFICIENCY", official: "When the design or operation of a control does not allow management or employees, in the normal course of performing their assigned functions, to prevent or detect misstatements on a timely basis.", plain: "A flaw in a system (e.g., one person approves purchases and pays the bills) that makes the entity vulnerable to errors or fraud.", not: "A material weakness (which is a more severe deficiency)." },
+                { term: "COST-REIMBURSEMENT BASIS", official: "The setting of charges so that costs are systematically recovered on a break-even basis over time, used in connection with internal service funds.", plain: "The pricing method where an internal service (like the print shop) only charges departments enough money to cover its actual operating costs.", not: "Profit-based pricing." },
+                { term: "COST-SHARING MULTIPLE-EMPLOYER DEFINED BENEFIT PENSION PLAN (COST-SHARING PENSION PLAN)", official: "A multiple-employer defined benefit pension plan in which the pension obligations to the employees of more than one employer are pooled and pension plan assets can be used to pay the benefits of the employees of any employer that provides pensions through the pension plan.", plain: "A large pension system (like a statewide teacher's retirement) where all participating employers pool their assets and share the collective liability.", not: "Agent plan (where each employer has separate liability)." },
+                { term: "COUNTERPARTY", official: "Another party to a transaction. In the case of deposits and investments made by governmental entities, a counterparty could be the issuer of security, a financial institution holding a deposit, a broker-dealer selling securities, or a third-party holding securities or collateral.", plain: "The other person or entity involved in a financial deal (e.g., the bank that holds your cash or the company that issues the bond you buy).", not: "The government itself." },
+                { term: "COVERAGE RATIO", official: "Ratio of pledged revenues to related debt service payments.", plain: "A measure of the financial safety of a bond, calculated by dividing the revenue available to pay the debt by the required debt payments.", not: "Debt-to-asset ratio." },
+                { term: "COVERED GROUP", official: "Term used in connection with pension and other postemployment benefit plans to describe plan members included in an actuarial valuation.", plain: "The specific group of active and retired employees whose benefits are being calculated by the actuary.", not: "All employees." },
+                { term: "CREDIT RISK", official: "Risk that an issuer or other counterparty to an investment will not fulfill its obligations.", plain: "The danger that the company or entity that borrowed your money (by issuing a bond or note) will default and not pay you back.", not: "Interest rate risk." },
+                { term: "CROSSOVER REFUNDING", official: "A type of advance refunding in which the escrow established with the proceeds of the refunding bonds only begins to secure repayment of the refunded debt at some designated future time, known as the crossover date.", plain: "A debt restructuring where the proceeds of the new bond temporarily pay the interest on the *old* bond, but only take over the principal payment on a future 'crossover' date.", not: "Current refunding." },
+                { term: "CURRENT ASSETS", official: "Current assets include cash or other assets that are reasonably expected to be realized in cash or sold or consumed within a year.", plain: "Assets that will be converted to cash, sold, or used up within the next 12 months (e.g., cash, accounts receivable).", not: "Capital assets (long-lived assets)." },
+                { term: "CURRENT COSTS", official: "The amount that would be paid if all equipment, facilities, and services included in the estimate of closure and post closure care costs were acquired during the current period, used in connection with MSWLFs.", plain: "The estimated cost, in today's dollars, to permanently close and monitor a landfill after it stops accepting trash.", not: "Future costs." },
+                { term: "CURRENT FINANCIAL RESOURCES MEASUREMENT FOCUS", official: "Measurement focus according to which the aim of a set of financial statements is to report the near term (current) inflows, outflows, and balances of expendable (spendable) financial resources. Used solely for governmental funds.", plain: "The focus of governmental fund reporting: measuring what cash is available to spend **now** to meet current obligations.", not: "Economic resources measurement focus (used for business/government-wide reports)." },
+                { term: "CURRENT REFUNDING", official: "A refunding transaction in which the proceeds of the refunding debt are applied immediately to redeem the debt to be refunded.", plain: "Issuing a new bond and using the money to pay off the old bond *right away*.", not: "Advance refunding (where the old debt is paid off later)." },
+                { term: "CUSTODIAL CREDIT RISK", official: "The risk that a government will not be able to recover deposits if the depository financial institution fails or to recover the value of investment or collateral securities that are in the possession of an outside party if the counterparty to the investment or deposit transaction fails.", plain: "The risk that you could lose your cash or investments because the bank or brokerage holding them goes bankrupt.", not: "Credit risk (the risk that the *issuer* of the security fails)." },
+                { term: "CUSTODIAL FUNDS", official: "One of four types of fiduciary funds. Used to report resources held by the reporting government in a purely custodial capacity (assets equal liabilities).", plain: "Funds used to hold money temporarily on behalf of outside parties (e.g., taxes collected for another government) before sending it to them.", not: "Pension funds (which manage assets long-term)." },
+                { term: "DEBT SERVICE FUND", official: "Governmental fund type used to account for the accumulation of resources for, and the payment of, general long-term debt principal and interest.", plain: "The fund dedicated to tracking the money set aside and spent to pay off the principal and interest on general government debt.", not: "Capital Projects Fund (for building the assets)." },
+                { term: "DEDUCTION", official: "Term used in connection with fiduciary funds. Decrease in the net position of a fiduciary fund.", plain: "A decrease in the assets of a fiduciary fund, often due to paying out benefits or transferring collected money to the intended recipient.", not: "Expenditure (for governmental funds)." },
+                { term: "DEFEASANCE", official: "In financial reporting, the netting of outstanding liabilities and related assets on the statement of net position.", plain: "A transaction where a debtor legally eliminates a debt from its books by placing cash or securities in an irrevocable trust to cover all future payments.", not: "Repaying a loan normally." },
             ]
         };
+
+        // Helper function to generate the HTML for a single term row
+        function createTermEntryHtml(item, category) {
+            return `
+                <div class="term-entry grid grid-cols-4 gap-x-2 gap-y-1 p-3 border-b border-gray-100 hover:bg-yellow-50 transition duration-100 text-gray-800"
+                    data-term="${item.term}" data-official="${item.official}" data-plain="${item.plain}" data-not="${item.not}" data-category="${category}">
+                    <div class="col-span-1 font-bold text-green-700 p-2">${item.term}</div>
+                    <div class="col-span-1 p-2">${item.official}</div>
+                    <div class="col-span-1 p-2 text-gray-700">${item.plain}</div>
+                    <div class="col-span-1 p-2 text-red-600 italic">${item.not}</div>
+                </div>
+            `;
+        }
+        
+        // Helper function to generate the table header
+        function createTableHeaderHtml() {
+            return `
+                <div class="grid grid-cols-4 gap-x-2 gap-y-1 p-3 text-sm font-semibold text-gray-600 border-b border-gray-100 sticky top-0 bg-yellow-100/95 z-10">
+                    <div class="col-span-1 p-2">Term</div>
+                    <div class="col-span-1 p-2">Official Definition</div>
+                    <div class="col-span-1 p-2">In Plain Language</div>
+                    <div class="col-span-1 p-2">What It's Not</div>
+                </div>
+            `;
+        }
 
         // Function to build the category accordion and term list
         function renderTerminology() {
@@ -76,33 +207,23 @@
                 const terms = financeData[category];
                 const categoryId = category.replace(/\s+/g, '-').toLowerCase();
 
-                // Accordion Button
+                // Accordion Button - UPDATED COLORS
                 const button = `
                     <button id="btn-${categoryId}" onclick="toggleAccordion('${categoryId}')"
-                            class="accordion-toggle w-full flex justify-between items-center p-5 mt-4 text-left font-bold text-xl bg-blue-600 hover:bg-blue-700 text-white rounded-t-lg shadow-lg focus:outline-none transition duration-150 ease-in-out">
+                            class="accordion-toggle w-full flex justify-between items-center p-5 mt-4 text-left font-bold text-xl bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg focus:outline-none transition duration-150 ease-in-out"
+                            data-accordion-id="${categoryId}">
                         ${category}
                         <svg class="accordion-icon w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 `;
 
                 // Term List (The Accordion Content)
+                const termEntriesHtml = terms.map(item => createTermEntryHtml(item, category)).join('');
+
                 const content = `
                     <div id="${categoryId}" class="accordion-content border border-gray-200 bg-white shadow-md rounded-b-lg p-0" style="display: none;">
-                        <div class="grid grid-cols-4 gap-x-2 gap-y-1 p-3 text-sm font-semibold text-gray-600 border-b border-gray-100 sticky top-0 bg-gray-50/95 z-10">
-                            <div class="col-span-1 p-2">Term</div>
-                            <div class="col-span-1 p-2">Official Definition</div>
-                            <div class="col-span-1 p-2">In Plain Language</div>
-                            <div class="col-span-1 p-2">What It's Not</div>
-                        </div>
-                        ${terms.map(item => `
-                            <div class="term-entry grid grid-cols-4 gap-x-2 gap-y-1 p-3 border-b border-gray-100 hover:bg-blue-50 transition duration-100 text-gray-800"
-                                 data-term="${item.term}" data-official="${item.official}" data-plain="${item.plain}" data-not="${item.not}" data-category="${category}">
-                                <div class="col-span-1 font-bold text-blue-800 p-2">${item.term}</div>
-                                <div class="col-span-1 p-2">${item.official}</div>
-                                <div class="col-span-1 p-2 text-green-700">${item.plain}</div>
-                                <div class="col-span-1 p-2 text-red-600 italic">${item.not}</div>
-                            </div>
-                        `).join('')}
+                        ${createTableHeaderHtml()}
+                        ${termEntriesHtml}
                     </div>
                 `;
 
@@ -110,61 +231,97 @@
             }
         }
 
-        // Function to toggle accordion visibility
+        // Function to toggle accordion visibility (One-at-a-Time)
         function toggleAccordion(id) {
             const content = document.getElementById(id);
             const button = document.getElementById(`btn-${id}`);
-            if (content.style.display === "none") {
+            const isCurrentlyOpen = content.style.display === "block";
+
+            // 1. Close ALL accordions
+            document.querySelectorAll('.accordion-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.accordion-toggle').forEach(b => b.classList.remove('accordion-open'));
+
+            // 2. Open the selected one (if it wasn't already open)
+            if (!isCurrentlyOpen) {
                 content.style.display = "block";
                 button.classList.add('accordion-open');
-            } else {
-                content.style.display = "none";
-                button.classList.remove('accordion-open');
             }
         }
 
         // Function for Search/Filter
         function filterTerms() {
             const input = document.getElementById('searchInput');
-            const filterText = input.value.toUpperCase();
-            const entries = document.querySelectorAll('.term-entry');
-            const categories = document.querySelectorAll('.accordion-content');
-            const categoryButtons = document.querySelectorAll('.accordion-toggle');
+            const filterText = input.value.toUpperCase().trim();
+            const categoryContainer = document.getElementById('terminologyContainer');
+            const searchResultsContainer = document.getElementById('searchResultsContainer');
+            const searchResultsHeader = document.querySelector('#searchResultsContainer h2');
+            const allTerms = [];
+            let searchResultsHtml = '';
 
-            // 1. Filter individual term entries
-            entries.forEach(entry => {
-                const termText = (entry.dataset.term + ' ' + entry.dataset.official + ' ' + entry.dataset.plain + ' ' + entry.dataset.not + ' ' + entry.dataset.category).toUpperCase();
-                if (termText.indexOf(filterText) > -1) {
-                    entry.style.display = 'grid'; // Show the entry
+            // 1. Flatten the data into a single array of all terms
+            for (const category in financeData) {
+                financeData[category].forEach(term => {
+                    allTerms.push({ ...term, category: category }); // Add category for search
+                });
+            }
+
+            if (filterText.length > 0) {
+                // Search Mode
+                
+                // Filter terms based on search text
+                const matchingTerms = allTerms.filter(item => {
+                    const termText = (item.term + ' ' + item.official + ' ' + item.plain + ' ' + item.not + ' ' + item.category).toUpperCase();
+                    return termText.indexOf(filterText) > -1;
+                });
+                
+                // Build the search results HTML
+                if (matchingTerms.length > 0) {
+                    searchResultsContainer.classList.remove('hidden');
+                    categoryContainer.style.display = 'none';
+
+                    let termListHtml = '';
+                    termListHtml += createTableHeaderHtml();
+
+                    matchingTerms.forEach(item => {
+                        // Create a modified term entry for search results to show the category
+                        const categoryLabel = `<div class="col-span-4 bg-yellow-100 text-sm font-semibold text-green-700 p-2 border-t border-gray-200">Category: ${item.category}</div>`;
+                        termListHtml += categoryLabel;
+                        termListHtml += createTermEntryHtml(item, item.category);
+                    });
+                    
+                    searchResultsHtml = `
+                        <div class="border border-gray-200 bg-white shadow-md rounded-lg p-0">
+                            ${termListHtml}
+                        </div>
+                    `;
+
+                    searchResultsContainer.innerHTML = `
+                        <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Search Results (${matchingTerms.length} terms found)</h2>
+                        ${searchResultsHtml}
+                    `;
                 } else {
-                    entry.style.display = 'none'; // Hide the entry
+                    searchResultsContainer.classList.remove('hidden');
+                    categoryContainer.style.display = 'none';
+                    searchResultsContainer.innerHTML = `
+                        <h2 class="text-2xl font-bold text-gray-700 mb-4 border-b pb-2">Search Results (0 terms found)</h2>
+                        <div class="p-8 bg-white rounded-lg shadow-md text-center text-gray-500">
+                            <p class="text-xl font-semibold">😔 No results found for "${input.value}"</p>
+                            <p class="mt-2">Try a different term, official definition, or category name.</p>
+                        </div>
+                    `;
                 }
-            });
 
-            // 2. Manage the category visibility (accordion functionality)
-            categories.forEach(content => {
-                const visibleTerms = content.querySelectorAll('.term-entry[style="display: grid;"]');
-                const categoryId = content.id;
-                const button = document.getElementById(`btn-${categoryId}`);
+            } else {
+                // No Search (Empty Bar)
+                
+                // Hide search results and show category container (default state)
+                searchResultsContainer.classList.add('hidden');
+                categoryContainer.style.display = 'block';
 
-                if (filterText.length > 0) {
-                    // In search mode: Show content if it has visible terms, hide otherwise.
-                    // Also expand the accordion and remove the 'open' class for styling.
-                    if (visibleTerms.length > 0) {
-                        content.style.display = 'block';
-                        button.style.display = 'flex'; // Ensure button is visible
-                        button.classList.remove('accordion-open'); // Don't show the rotation icon
-                    } else {
-                        content.style.display = 'none';
-                        button.style.display = 'none'; // Hide button if category has no matches
-                    }
-                } else {
-                    // No search (empty bar): Revert to default closed state
-                    content.style.display = 'none';
-                    button.style.display = 'flex'; // Ensure button is visible
-                    button.classList.remove('accordion-open');
-                }
-            });
+                // Ensure all categories are closed by default (re-run logic from initial load)
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.display = 'none');
+                document.querySelectorAll('.accordion-toggle').forEach(b => b.classList.remove('accordion-open'));
+            }
         }
 
         // Initialize the handout when the page loads
